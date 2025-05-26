@@ -3,8 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useAuth } from '../services/AuthContext';
 import { ActivityIndicator, View } from 'react-native';
-import HomeNavigator from './HomeNavigator';
 import AuthNavigator from './AuthNavigator';
+import HomeNavigator from './HomeNavigator';
 
 const Stack = createStackNavigator();
 

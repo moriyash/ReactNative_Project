@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import AuthNavigator from './AuthNavigator';
+import HomeNavigator from './HomeNavigator'; // השתמש ב־HomeNavigator
 import { useAuth } from '../services/AuthContext';
 import { ActivityIndicator, View } from 'react-native';
-import HomeNavigator from './HomeNavigator';
-import AuthNavigator from './AuthNavigator';
 
 const Stack = createStackNavigator();
 

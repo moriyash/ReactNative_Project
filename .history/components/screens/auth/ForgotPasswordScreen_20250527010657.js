@@ -9,8 +9,8 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { authService } from '../../../services/authService';
 import EmailInput from '../../common/EmailInput';
+import { authService } from '../../../services/authService';
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');

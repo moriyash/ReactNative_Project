@@ -15,10 +15,10 @@ import {
   Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '../../../services/AuthContext.js';
 import CreatePostComponent from '../../common/CreatePostComponent.js';
-import SharePostComponent from '../../common/SharePostComponent.js';
 import PostComponent from '../../common/PostComponent.js';
+import SharePostComponent from '../../common/SharePostComponent';
+import { useAuth } from '../../../services/AuthContext.js';
 
 // Mock data for current user
 const currentUser = {

@@ -11,9 +11,9 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { authService } from '../../../services/authService';
-import PasswordInput from '../../common/PasswordInput';
 import EmailInput from '../../common/EmailInput';
+import PasswordInput from '../../common/PasswordInput';
+import { authService } from '../../../services/authService';
 
 const RegisterScreen = ({ navigation }) => {
   const [form, setForm] = useState({
