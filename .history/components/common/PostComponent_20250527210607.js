@@ -11,7 +11,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { recipeService } from '../../services/recipeService';
+import { recipeService } from '../../../services/recipeService';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -24,42 +24,27 @@ const PostComponent = ({ post, currentUser, onUpdate, onDelete, onShare }) => {
   const [newComment, setNewComment] = useState('');
 
   const formatTime = (minutes) => {
-    if (!minutes || isNaN(minutes)) return '0m';
-
-    const numMinutes = parseInt(minutes);
-    if (numMinutes < 60) {
-      return `${numMinutes}m`;
+    if (minutes < 60) {
+      return `${minutes}m`;
     } else {
-      const hours = Math.floor(numMinutes / 60);
-      const remainingMinutes = numMinutes % 60;
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
       return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
     }
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Just now';
-
-    try {
-      const date = new Date(dateString);
-      const now = new Date();
-
-      if (isNaN(date.getTime())) {
-        return 'Just now';
-      }
-
-      const diffInMs = now - date;
-      const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-
-      if (diffInHours < 1) {
-        return 'Just now';
-      } else if (diffInHours < 24) {
-        return `${diffInHours}h ago`;
-      } else {
-        const diffInDays = Math.floor(diffInHours / 24);
-        return `${diffInDays}d ago`;
-      }
-    } catch (error) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) {
       return 'Just now';
+    } else if (diffInHours < 24) {
+      return `${diffInHours}h ago`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays}d ago`;
     }
   };
 
@@ -94,8 +79,8 @@ const PostComponent = ({ post, currentUser, onUpdate, onDelete, onShare }) => {
       'Are you sure you want to delete this recipe?',
       [
         { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
+        { 
+          text: 'Delete', 
           style: 'destructive',
           onPress: () => onDelete(post._id)
         }
@@ -160,16 +145,13 @@ const PostComponent = ({ post, currentUser, onUpdate, onDelete, onShare }) => {
       {/* Post Header */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          <Image
-            source={{ uri: post.userAvatar || 'https://randomuser.me/api/portraits/men/32.jpg' }}
-            style={styles.avatar}
-          />
+          <Image source={{ uri: post.userAvatar || currentUser.avatar }} style={styles.avatar} />
           <View>
-            <Text style={styles.userName}>{post.userName || 'Anonymous'}</Text>
+            <Text style={styles.userName}>{post.userName}</Text>
             <Text style={styles.timeStamp}>{formatDate(post.createdAt)}</Text>
           </View>
         </View>
-
+        
         <TouchableOpacity style={styles.moreButton}>
           <Ionicons name="ellipsis-horizontal" size={20} color="#65676b" />
         </TouchableOpacity>
@@ -177,9 +159,9 @@ const PostComponent = ({ post, currentUser, onUpdate, onDelete, onShare }) => {
 
       {/* Recipe Content */}
       <TouchableOpacity onPress={() => setShowFullRecipe(true)}>
-        <Text style={styles.recipeTitle}>{post.title || 'Untitled Recipe'}</Text>
+        <Text style={styles.recipeTitle}>{post.title}</Text>
         <Text style={styles.recipeDescription} numberOfLines={2}>
-          {post.description || 'No description available'}
+          {post.description}
         </Text>
 
         <View style={styles.recipeInfo}>
@@ -189,11 +171,11 @@ const PostComponent = ({ post, currentUser, onUpdate, onDelete, onShare }) => {
           </View>
           <View style={styles.recipeInfoItem}>
             <Ionicons name="people-outline" size={16} color="#FF6B35" />
-            <Text style={styles.recipeInfoText}>{post.servings || 0} servings</Text>
+            <Text style={styles.recipeInfoText}>{post.servings} servings</Text>
           </View>
           <View style={styles.categoryContainer}>
-            <Text style={styles.categoryTag}>{post.category || 'General'}</Text>
-            <Text style={styles.meatTypeTag}>{post.meatType || 'Mixed'}</Text>
+            <Text style={styles.categoryTag}>{post.category}</Text>
+            <Text style={styles.meatTypeTag}>{post.meatType}</Text>
           </View>
         </View>
 
@@ -205,18 +187,18 @@ const PostComponent = ({ post, currentUser, onUpdate, onDelete, onShare }) => {
       {/* Action Buttons */}
       <View style={styles.actions}>
         <TouchableOpacity style={styles.actionButton} onPress={handleLike}>
-          <Ionicons
-            name={isLiked ? "heart" : "heart-outline"}
-            size={20}
-            color={isLiked ? "#FF3B30" : "#65676b"}
+          <Ionicons 
+            name={isLiked ? "heart" : "heart-outline"} 
+            size={20} 
+            color={isLiked ? "#FF3B30" : "#65676b"} 
           />
           <Text style={[styles.actionText, isLiked && styles.likedText]}>
             {likesCount}
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.actionButton}
+        <TouchableOpacity 
+          style={styles.actionButton} 
           onPress={() => setShowComments(!showComments)}
         >
           <Ionicons name="chatbubble-outline" size={20} color="#65676b" />
@@ -252,7 +234,8 @@ const PostComponent = ({ post, currentUser, onUpdate, onDelete, onShare }) => {
 };
 
 const styles = StyleSheet.create({
-  // כל ה-style נשאר כמו ששלחת – אם תרצה שאשלח גם את זה שוב, תגיד לי.
+  // כל הסטיילים נשארו בדיוק כפי ששלחת – אין שינוי
+  // אם תרצי קובץ נפרד לקוד הזה או דוגמה לרינדור של הפוסטים במסך הבית – תגידי :)
 });
 
 export default PostComponent;

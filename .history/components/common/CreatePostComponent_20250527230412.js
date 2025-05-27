@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { recipeService } from '../../services/recipeService';
+import { recipeService } from '../../../services/recipeService';
 
 const RECIPE_CATEGORIES = [
   'Asian', 'Italian', 'Mexican', 'Indian', 'Mediterranean', 
@@ -121,9 +121,9 @@ const CreatePostComponent = ({ onPostCreated, currentUser }) => {
         prepTime: totalMinutes,
         servings: parseInt(postData.servings),
         image: postData.image?.uri || null,
-        userId: currentUser.id,
+        userId: currentUser.id || 'anonymous',
         userName: currentUser.fullName || currentUser.name || 'Anonymous Chef',
-        userAvatar: currentUser.avatar || null
+        userAvatar: currentUser.avatar || 'https://randomuser.me/api/portraits/men/32.jpg'
       };
 
       console.log('Sending recipe data:', recipeData);

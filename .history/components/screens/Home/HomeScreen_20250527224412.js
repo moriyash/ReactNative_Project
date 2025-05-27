@@ -20,15 +20,17 @@ import SharePostComponent from '../../common/SharePostComponent.js';
 import PostComponent from '../../common/PostComponent.js';
 import { recipeService } from '../../../services/recipeService.js';
 
-// Current user data - should come from auth context in real app
-const currentUser = {
-  id: 'user123',
-  name: 'John Doe',
-  avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
-};
+// נתוני המשתמש יבואו מהקונטקסט
 
 const HomeScreen = ({ navigation, route }) => {
-  const { userToken, logout } = useAuth();
+  const { userToken, logout, currentUser } = useAuth();
+  
+  // ברירת מחדל אם אין נתוני משתמש
+  const user = currentUser || {
+    id: 'user123',
+    fullName: 'User',
+    email: 'user@example.com'
+  };
   
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -78,7 +80,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const handlePostUpdate = (updatedRecipe) => {
     setRecipes(recipes.map(recipe =>
-      recipe._id === updatedRecipe._id ? updatedRecipe : recipe
+      (recipe._id || recipe.id) === (updatedRecipe._id || updatedRecipe.id) ? updatedRecipe : recipe
     ));
   };
 
@@ -86,7 +88,7 @@ const HomeScreen = ({ navigation, route }) => {
     try {
       const result = await recipeService.deleteRecipe(recipeId);
       if (result.success) {
-        setRecipes(recipes.filter(recipe => recipe._id !== recipeId));
+        setRecipes(recipes.filter(recipe => (recipe._id || recipe.id) !== recipeId));
         Alert.alert('Success', 'Recipe deleted successfully');
       } else {
         Alert.alert('Error', result.message);
@@ -308,7 +310,7 @@ const HomeScreen = ({ navigation, route }) => {
               navigation={navigation}
             />
           )}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item._id || item.id || Math.random().toString()}
           ListHeaderComponent={renderHeader}
           ListEmptyComponent={renderEmptyState}
           refreshControl={
@@ -342,7 +344,7 @@ const HomeScreen = ({ navigation, route }) => {
 
           <CreatePostComponent
             onPostCreated={handlePostCreated}
-            currentUser={currentUser}
+            currentUser={user}
           />
         </SafeAreaView>
       </Modal>
@@ -582,4 +584,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default HomeScreen;

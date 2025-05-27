@@ -67,7 +67,6 @@ export default function LoginScreen({ navigation }) {
     setIsFormValid(isEmailValid && isPasswordValid);
   };
   
-  // פונקציה מעודכנת עם שמירת נתוני משתמש
   const handleLogin = async () => {
     if (!form.email.trim() || !form.password.trim()) {
       Alert.alert('Error', 'Please fill in all fields');
@@ -77,19 +76,38 @@ export default function LoginScreen({ navigation }) {
     setIsLoading(true);
     
     try {
+      console.log('Attempting login with:', form.email);
+      
       const result = await authService.login({
         email: form.email.trim(),
         password: form.password
       });
 
+      console.log('Login result:', result);
+
       if (result.success) {
+        // הטיפול בנתונים שחוזרים מהשרת
+        const token = result.data?.token;
+        const userData = result.data?.user;
+        
+        if (!token) {
+          Alert.alert('Error', 'No authentication token received');
+          return;
+        }
+
+        console.log('Login successful, saving token and user data');
+        
         // שמירת הטוקן ונתוני המשתמש
-        await login(result.data.token, result.data.user);
+        await login(token, userData);
+        
+        Alert.alert('Success', 'Login successful!');
       } else {
-        Alert.alert('Login Failed', result.message);
+        console.log('Login failed:', result.message);
+        Alert.alert('Login Failed', result.message || 'Login failed');
       }
     } catch (error) {
-      Alert.alert('Error', 'Connection failed. Please try again.');
+      console.error('Login error:', error);
+      Alert.alert('Error', 'Connection failed. Please check your internet connection and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +125,8 @@ export default function LoginScreen({ navigation }) {
             alt="App Logo"
             resizeMode="contain"
             style={styles.headerImg}
-            source={{ uri: 'https://haraayonot.com/wp-content/uploads/2016/08/Logo.png' }} />
+            source={{ uri: 'https://haraayonot.com/wp-content/uploads/2016/08/Logo.png' }} 
+          />
 
           <Text style={styles.title}>
             Sign in to <Text style={{ color: '#075eec' }}>Recipe Share</Text>

@@ -20,15 +20,16 @@ import SharePostComponent from '../../common/SharePostComponent.js';
 import PostComponent from '../../common/PostComponent.js';
 import { recipeService } from '../../../services/recipeService.js';
 
-// Current user data - should come from auth context in real app
-const currentUser = {
-  id: 'user123',
-  name: 'John Doe',
-  avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
-};
-
 const HomeScreen = ({ navigation, route }) => {
-  const { userToken, logout } = useAuth();
+  const { userToken, logout, currentUser } = useAuth();
+  
+  // ברירת מחדל אם אין נתוני משתמש
+  const user = currentUser || {
+    id: 'user123',
+    fullName: 'User',
+    email: 'user@example.com',
+    avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
+  };
   
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,15 +46,19 @@ const HomeScreen = ({ navigation, route }) => {
 
   const fetchRecipes = async () => {
     try {
+      console.log('Fetching recipes from server...');
       const result = await recipeService.getAllRecipes();
+      console.log('Fetch result:', result);
+      
       if (result.success) {
         // Sort recipes by creation date (newest first)
         const sortedRecipes = result.data.sort((a, b) => 
           new Date(b.createdAt) - new Date(a.createdAt)
         );
+        console.log('Sorted recipes:', sortedRecipes);
         setRecipes(sortedRecipes);
       } else {
-        console.log('No recipes found or error loading recipes');
+        console.log('No recipes found or error loading recipes:', result.message);
         setRecipes([]);
       }
     } catch (error) {
@@ -71,6 +76,7 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const handlePostCreated = (newRecipe) => {
+    console.log('New recipe created:', newRecipe);
     // Add new recipe to the top of the list
     setRecipes([newRecipe, ...recipes]);
     setShowCreatePost(false);
@@ -78,7 +84,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const handlePostUpdate = (updatedRecipe) => {
     setRecipes(recipes.map(recipe =>
-      recipe._id === updatedRecipe._id ? updatedRecipe : recipe
+      (recipe._id || recipe.id) === (updatedRecipe._id || updatedRecipe.id) ? updatedRecipe : recipe
     ));
   };
 
@@ -86,7 +92,7 @@ const HomeScreen = ({ navigation, route }) => {
     try {
       const result = await recipeService.deleteRecipe(recipeId);
       if (result.success) {
-        setRecipes(recipes.filter(recipe => recipe._id !== recipeId));
+        setRecipes(recipes.filter(recipe => (recipe._id || recipe.id) !== recipeId));
         Alert.alert('Success', 'Recipe deleted successfully');
       } else {
         Alert.alert('Error', result.message);
@@ -146,7 +152,7 @@ const HomeScreen = ({ navigation, route }) => {
         onPress={() => setShowCreatePost(true)}
       >
         <View style={styles.createPostButtonContent}>
-          <Image source={{ uri: currentUser.avatar }} style={styles.userAvatar} />
+          <Image source={{ uri: user.avatar }} style={styles.userAvatar} />
           <View style={styles.createPostInputPlaceholder}>
             <Text style={styles.createPostText}>Share a new recipe...</Text>
           </View>
@@ -301,14 +307,14 @@ const HomeScreen = ({ navigation, route }) => {
           renderItem={({ item }) => (
             <PostComponent
               post={item}
-              currentUser={currentUser}
+              currentUser={user}
               onUpdate={handlePostUpdate}
               onDelete={handlePostDelete}
               onShare={() => handleShare(item)}
               navigation={navigation}
             />
           )}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item._id || item.id || Math.random().toString()}
           ListHeaderComponent={renderHeader}
           ListEmptyComponent={renderEmptyState}
           refreshControl={
@@ -342,7 +348,7 @@ const HomeScreen = ({ navigation, route }) => {
 
           <CreatePostComponent
             onPostCreated={handlePostCreated}
-            currentUser={currentUser}
+            currentUser={user}
           />
         </SafeAreaView>
       </Modal>
@@ -352,7 +358,7 @@ const HomeScreen = ({ navigation, route }) => {
         onClose={() => setShareModalVisible(false)}
         post={postToShare}
         onShare={handleShareSubmit}
-        currentUserId={currentUser.id}
+        currentUserId={user.id}
       />
       
       {renderMenuModal()}

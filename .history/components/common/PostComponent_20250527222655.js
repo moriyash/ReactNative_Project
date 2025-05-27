@@ -11,7 +11,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { recipeService } from '../../services/recipeService';
+import { recipeService } from '../../../services/recipeService';
 
 const { width: screenWidth } = Dimensions.get('window');
 

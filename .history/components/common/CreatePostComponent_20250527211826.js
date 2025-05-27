@@ -19,7 +19,7 @@ import { recipeService } from '../../services/recipeService';
 const RECIPE_CATEGORIES = [
   'Asian', 'Italian', 'Mexican', 'Indian', 'Mediterranean', 
   'American', 'French', 'Chinese', 'Japanese', 'Thai', 
-  'Middle Eastern', 'Greek', 'Spanish', 'Korean', 'Vietnamese'
+  'Middle Eastern', 'Greek', 'Spanish', 'Korean', 'Vietnamese',"sweets"
 ];
 
 const MEAT_TYPES = [
@@ -120,13 +120,8 @@ const CreatePostComponent = ({ onPostCreated, currentUser }) => {
         meatType: postData.meatType,
         prepTime: totalMinutes,
         servings: parseInt(postData.servings),
-        image: postData.image?.uri || null,
-        userId: currentUser.id,
-        userName: currentUser.fullName || currentUser.name || 'Anonymous Chef',
-        userAvatar: currentUser.avatar || null
+        image: postData.image
       };
-
-      console.log('Sending recipe data:', recipeData);
 
       const result = await recipeService.createRecipe(recipeData);
 
@@ -143,7 +138,6 @@ const CreatePostComponent = ({ onPostCreated, currentUser }) => {
         Alert.alert('Error', result.message);
       }
     } catch (error) {
-      console.error('Submit error:', error);
       Alert.alert('Error', 'Failed to post recipe. Please try again.');
     } finally {
       setIsLoading(false);

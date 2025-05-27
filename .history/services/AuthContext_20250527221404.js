@@ -42,6 +42,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (token, userData = null) => {
     try {
+      console.log('AuthContext: Saving login data', { token: token ? 'exists' : 'missing', userData });
+      
       await AsyncStorage.setItem('userToken', token);
       
       // שמירת נתוני המשתמש אם קיימים
@@ -52,6 +54,8 @@ export const AuthProvider = ({ children }) => {
       
       setUserToken(token);
       setIsLoggedIn(true);
+      
+      console.log('AuthContext: Login successful');
     } catch (error) {
       console.error("Error during login:", error);
       throw error;

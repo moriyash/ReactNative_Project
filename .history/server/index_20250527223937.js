@@ -9,21 +9,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection - אם יש לך מונגו
+// MongoDB connection
 if (process.env.MONGODB_URI) {
   mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log('MongoDB Connection Error:', err));
 }
 
-// User schema פשוט
+// User schema
 const User = mongoose.model('User', {
   fullName: String,
   email: { type: String, unique: true },
   password: String
 });
 
-// Recipe schema פשוט
+// Recipe schema
 const Recipe = mongoose.model('Recipe', {
   title: String,
   description: String,
@@ -51,7 +51,7 @@ const Recipe = mongoose.model('Recipe', {
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
-    
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
@@ -62,7 +62,7 @@ app.post('/api/auth/register', async (req, res) => {
 
     res.status(201).json({
       message: 'User registered successfully',
-      data: { 
+      data: {
         token: 'dummy-token-' + user._id,
         user: { id: user._id, fullName, email }
       }
@@ -75,7 +75,7 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    
+
     const user = await User.findOne({ email, password });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
@@ -83,7 +83,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      data: { 
+      data: {
         token: 'dummy-token-' + user._id,
         user: { id: user._id, fullName: user.fullName, email: user.email }
       }
@@ -110,8 +110,7 @@ app.get('/api/recipes', async (req, res) => {
 app.post('/api/recipes', async (req, res) => {
   try {
     console.log('Received recipe data:', req.body);
-    
-    // ברירות מחדל לנתונים חסרים
+
     const recipeData = {
       title: req.body.title || 'Untitled Recipe',
       description: req.body.description || '',
@@ -129,10 +128,10 @@ app.post('/api/recipes', async (req, res) => {
       comments: [],
       createdAt: new Date()
     };
-    
+
     const recipe = new Recipe(recipeData);
     await recipe.save();
-    
+
     console.log('Recipe saved successfully:', recipe);
     res.status(201).json(recipe);
   } catch (error) {
@@ -155,13 +154,13 @@ app.post('/api/recipes/:id/like', async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
     if (!recipe.likes) recipe.likes = [];
-    
+
     const userId = 'current-user-id'; // זמני
     if (!recipe.likes.includes(userId)) {
       recipe.likes.push(userId);
       await recipe.save();
     }
-    
+
     res.json({ likesCount: recipe.likes.length });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -172,10 +171,10 @@ app.delete('/api/recipes/:id/like', async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
     const userId = 'current-user-id'; // זמני
-    
+
     recipe.likes = recipe.likes.filter(id => id !== userId);
     await recipe.save();
-    
+
     res.json({ likesCount: recipe.likes.length });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -193,5 +192,6 @@ app.use((error, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

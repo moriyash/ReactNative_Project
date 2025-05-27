@@ -14,6 +14,7 @@ import {
 import { authService } from '../../../services/authService';
 import { useAuth } from '../../../services/AuthContext';
 
+
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
 
@@ -67,7 +68,7 @@ export default function LoginScreen({ navigation }) {
     setIsFormValid(isEmailValid && isPasswordValid);
   };
   
-  // פונקציה מעודכנת עם שמירת נתוני משתמש
+  // פונקציה מעודכנת עם קריאה למונגו
   const handleLogin = async () => {
     if (!form.email.trim() || !form.password.trim()) {
       Alert.alert('Error', 'Please fill in all fields');
@@ -83,8 +84,8 @@ export default function LoginScreen({ navigation }) {
       });
 
       if (result.success) {
-        // שמירת הטוקן ונתוני המשתמש
-        await login(result.data.token, result.data.user);
+        await login(result.data.token);
+ 
       } else {
         Alert.alert('Login Failed', result.message);
       }
@@ -110,11 +111,11 @@ export default function LoginScreen({ navigation }) {
             source={{ uri: 'https://haraayonot.com/wp-content/uploads/2016/08/Logo.png' }} />
 
           <Text style={styles.title}>
-            Sign in to <Text style={{ color: '#075eec' }}>Recipe Share</Text>
+            Sign in to <Text style={{ color: '#075eec' }}>MyApp</Text>
           </Text>
 
           <Text style={styles.subtitle}>
-            Welcome to the recipe community
+            Welcome to the app
           </Text>
         </View>
 
@@ -327,5 +328,5 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     fontWeight: '600',
     color: '#fff',
-  },
+},
 });

@@ -20,15 +20,17 @@ import SharePostComponent from '../../common/SharePostComponent.js';
 import PostComponent from '../../common/PostComponent.js';
 import { recipeService } from '../../../services/recipeService.js';
 
-// Current user data - should come from auth context in real app
-const currentUser = {
-  id: 'user123',
-  name: 'John Doe',
-  avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
-};
+// נתוני המשתמש יבואו מהקונטקסט
 
 const HomeScreen = ({ navigation, route }) => {
-  const { userToken, logout } = useAuth();
+  const { userToken, logout, currentUser } = useAuth();
+  
+  // ברירת מחדל אם אין נתוני משתמש
+  const user = currentUser || {
+    id: 'user123',
+    fullName: 'User',
+    email: 'user@example.com'
+  };
   
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -342,7 +344,7 @@ const HomeScreen = ({ navigation, route }) => {
 
           <CreatePostComponent
             onPostCreated={handlePostCreated}
-            currentUser={currentUser}
+            currentUser={user}
           />
         </SafeAreaView>
       </Modal>
